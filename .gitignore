@@ -1,0 +1,27 @@
+# Ignore Python virtual environment
+myenv/
+
+# Ignore model files
+*.pt
+*.pth
+*.h5
+*.onnx
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore node_modules for frontend
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# The following files are cached in Git, so we need to untrack them
+git rm -r --cached myenv
+proctoring_backend/yolov8n.pt
+proctoring_backend/app/yolov8n.pt
