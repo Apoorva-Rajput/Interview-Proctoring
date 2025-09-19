@@ -1,18 +1,26 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Interviewer from "./components/Interviewer";
-import Interviewee from "./components/Interviewee";
+import React, { useState, useEffect } from "react";
+import LoginPage from "./components/LoginPage";
+import Dashboard from "./components/Dashboard";
+import Candidate from "./components/Candidate";
+// import Candidate from "./Candidate";
 
 function App() {
+  const [candidateId, setCandidateId] = useState(null);
+
+  useEffect(() => {
+    const storedId = localStorage.getItem("candidate_id");
+    if (storedId) setCandidateId(storedId);
+  }, []);
+
+  if (!candidateId) {
+    return <LoginPage onLogin={setCandidateId} />;
+  }
+
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/Interviewer" element={<Interviewer />} />
-        {/* <Route path="/Interviewee" element={<Interviewee />} /> */}
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Candidate candidateId={candidateId} />
+      <Dashboard candidateId={candidateId} />
+    </>
   );
 }
 
