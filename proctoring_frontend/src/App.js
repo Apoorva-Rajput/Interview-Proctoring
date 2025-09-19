@@ -5,20 +5,30 @@ import Candidate from "./components/Candidate";
 // import Candidate from "./Candidate";
 
 function App() {
-  const [candidateId, setCandidateId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
-    const storedId = localStorage.getItem("candidate_id");
-    if (storedId) setCandidateId(storedId);
+    const candidateId = localStorage.getItem("candidate_id");
+    const interviewerId = localStorage.getItem("interviewer_id");
+    if (candidateId) {
+      setUserId(candidateId);
+      setRole("candidate");
+    } else if (interviewerId) {
+      setUserId(interviewerId);
+      setRole("interviewer");
+    }
   }, []);
 
-  if (!candidateId) {
-    return <LoginPage onLogin={setCandidateId} />;
+  if (!userId || !role) {
+    return <LoginPage onLogin={(id, r) => { setUserId(id); setRole(r); }} />;
   }
 
   const handleLogout = () => {
     localStorage.removeItem("candidate_id");
-    setCandidateId(null);
+    localStorage.removeItem("interviewer_id");
+    setUserId(null);
+    setRole(null);
   };
 
   return (
@@ -28,8 +38,16 @@ function App() {
           Logout
         </button>
       </div>
-      <Candidate candidateId={candidateId} />
-      <Dashboard candidateId={candidateId} />
+      {role === "candidate" ? (
+        <div className="main-content-row">
+          <Candidate candidateId={userId} />
+        </div>
+      ) : (
+        <div className="main-content-row">
+          <Candidate candidateId={userId} />
+          <Dashboard candidateId={userId} />
+        </div>
+      )}
     </>
   );
 }

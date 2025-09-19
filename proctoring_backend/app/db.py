@@ -10,7 +10,7 @@ import os
 from pymongo import MongoClient, ASCENDING
 from datetime import datetime
 
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://rajputapoorva1103_db_user:LdR9FZSLVFY7AMXl@cluster0.lo0r8cg.mongodb.net/")
 client = MongoClient(MONGO_URI)
 db = client["proctoring_db"]
 
@@ -42,8 +42,9 @@ def get_events(candidate_id: str, limit: int = 1000):
     ).sort("timestamp", -1).limit(limit)
     return list(cursor)
 
-candidates_collection = db["candidates"]
 
+candidates_collection = db["candidates"]
+interviewers_collection = db["interviewers"]
 
 def create_candidate(username: str, password: str, name: str = "", email: str = ""):
     """Create a new candidate account (simple password storage for demo)."""
@@ -66,5 +67,27 @@ def authenticate_candidate(username: str, password: str):
     candidate = candidates_collection.find_one({"username": username, "password": password})
     if candidate:
         return str(candidate["_id"])
+    return None
+
+def create_interviewer(username: str, password: str, name: str = "", email: str = ""):
+    """Create a new interviewer account."""
+    existing = interviewers_collection.find_one({"username": username})
+    if existing:
+        return None
+    interviewer = {
+        "username": username,
+        "password": password,
+        "name": name,
+        "email": email,
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    result = interviewers_collection.insert_one(interviewer)
+    return str(result.inserted_id)
+
+def authenticate_interviewer(username: str, password: str):
+    """Verify interviewer login and return ID if success."""
+    interviewer = interviewers_collection.find_one({"username": username, "password": password})
+    if interviewer:
+        return str(interviewer["_id"])
     return None
 

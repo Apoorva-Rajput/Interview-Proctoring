@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import base64, io, cv2, numpy as np
@@ -8,7 +8,17 @@ import pandas as pd
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 
+import os
 app = FastAPI(title="Proctoring API (Browser Upload)")
+@app.post("/upload_video")
+async def upload_video(candidate_id: str = None, file: UploadFile = File(...)):
+    save_dir = "videos"
+    os.makedirs(save_dir, exist_ok=True)
+    filename = file.filename if file.filename else f"{candidate_id}_video.webm"
+    file_path = os.path.join(save_dir, filename)
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+    return {"message": "Video uploaded", "path": file_path}
 
 # CORS for frontend
 app.add_middleware(
@@ -85,30 +95,42 @@ def report(candidate_id: str):
         headers={"Content-Disposition": f"attachment; filename={candidate_id}_report.pdf"}
     )
 from fastapi import Request
-from db import create_candidate, authenticate_candidate
+from db import create_candidate, authenticate_candidate, create_interviewer, authenticate_interviewer
 
 @app.post("/register")
 async def register(request: Request):
     data = await request.json()
     username = data.get("username")
     password = data.get("password")
+    role = data.get("role", "candidate")
+    name = data.get("name", "")
+    email = data.get("email", "")
     if not username or not password:
         return JSONResponse(status_code=400, content={"error": "username & password required"})
-
-    candidate_id = create_candidate(username, password)
-    if not candidate_id:
-        return JSONResponse(status_code=400, content={"error": "User already exists"})
-
-    return {"message": "Registration successful", "candidate_id": candidate_id}
+    if role == "interviewer":
+        interviewer_id = create_interviewer(username, password, name, email)
+        if not interviewer_id:
+            return JSONResponse(status_code=400, content={"error": "User already exists"})
+        return {"message": "Registration successful", "interviewer_id": interviewer_id}
+    else:
+        candidate_id = create_candidate(username, password, name, email)
+        if not candidate_id:
+            return JSONResponse(status_code=400, content={"error": "User already exists"})
+        return {"message": "Registration successful", "candidate_id": candidate_id}
 
 @app.post("/login")
 async def login(request: Request):
     data = await request.json()
     username = data.get("username")
     password = data.get("password")
-
-    candidate_id = authenticate_candidate(username, password)
-    if not candidate_id:
-        return JSONResponse(status_code=401, content={"error": "Invalid credentials"})
-
-    return {"message": "Login successful", "candidate_id": candidate_id}
+    role = data.get("role", "candidate")
+    if role == "interviewer":
+        interviewer_id = authenticate_interviewer(username, password)
+        if not interviewer_id:
+            return JSONResponse(status_code=401, content={"error": "Invalid credentials"})
+        return {"message": "Login successful", "interviewer_id": interviewer_id}
+    else:
+        candidate_id = authenticate_candidate(username, password)
+        if not candidate_id:
+            return JSONResponse(status_code=401, content={"error": "Invalid credentials"})
+        return {"message": "Login successful", "candidate_id": candidate_id}
