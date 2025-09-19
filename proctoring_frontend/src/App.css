@@ -1,3 +1,57 @@
+/* Professional form styles for Login/Register */
+.auth-container {
+  max-width: 400px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.auth-container h2 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #222;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+.auth-container input:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.auth-container .auth-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.auth-container button {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background: #1976d2;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.auth-container button:hover {
+  background: #1565c0;
+}
+.auth-container .error-message {
+  margin-top: 1rem;
+  color: #d32f2f;
+  font-size: 1rem;
+}
 .App {
   text-align: center;
 }

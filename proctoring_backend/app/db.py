@@ -1,3 +1,10 @@
+def get_candidate_by_id(candidate_id: str):
+    """Fetch candidate details by candidate_id (MongoDB _id)."""
+    from bson import ObjectId
+    candidate = candidates_collection.find_one({"_id": ObjectId(candidate_id)})
+    if candidate:
+        candidate["_id"] = str(candidate["_id"])
+    return candidate
 # db.py
 import os
 from pymongo import MongoClient, ASCENDING
@@ -37,7 +44,8 @@ def get_events(candidate_id: str, limit: int = 1000):
 
 candidates_collection = db["candidates"]
 
-def create_candidate(username: str, password: str):
+
+def create_candidate(username: str, password: str, name: str = "", email: str = ""):
     """Create a new candidate account (simple password storage for demo)."""
     existing = candidates_collection.find_one({"username": username})
     if existing:
@@ -46,6 +54,9 @@ def create_candidate(username: str, password: str):
     candidate = {
         "username": username,
         "password": password,   # ⚠️ for production: hash this!
+        "name": name,
+        "email": email,
+        "created_at": datetime.utcnow().isoformat(),
     }
     result = candidates_collection.insert_one(candidate)
     return str(result.inserted_id)

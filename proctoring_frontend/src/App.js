@@ -16,8 +16,18 @@ function App() {
     return <LoginPage onLogin={setCandidateId} />;
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("candidate_id");
+    setCandidateId(null);
+  };
+
   return (
     <>
+      <div style={{ display: "flex", justifyContent: "flex-end", padding: "1rem" }}>
+        <button onClick={handleLogout} style={{ padding: "0.5rem 1rem", background: "#d32f2f", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+          Logout
+        </button>
+      </div>
       <Candidate candidateId={candidateId} />
       <Dashboard candidateId={candidateId} />
     </>
