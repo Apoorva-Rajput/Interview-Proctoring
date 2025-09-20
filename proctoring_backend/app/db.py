@@ -1,3 +1,4 @@
+
 import os
 from pymongo import MongoClient, ASCENDING
 from datetime import datetime
@@ -6,13 +7,60 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 client = MongoClient(MONGO_URI)
 db = client["proctoring_db"]
 
+# Add schema validation for candidates and interviewers collections
+candidate_schema = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["username", "password", "name", "email"],
+        "properties": {
+            "username": {"bsonType": "string"},
+            "password": {"bsonType": "string"},
+            "name": {"bsonType": "string"},
+            "email": {"bsonType": "string", "pattern": "^.+@.+$"},
+            "created_at": {"bsonType": "string"}
+        }
+    }
+}
+interviewer_schema = {
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["username", "password", "name", "email"],
+        "properties": {
+            "username": {"bsonType": "string"},
+            "password": {"bsonType": "string"},
+            "name": {"bsonType": "string"},
+            "email": {"bsonType": "string", "pattern": "^.+@.+$"},
+            "created_at": {"bsonType": "string"}
+        }
+    }
+}
+
 # Ensure collection exists and create an index on candidate_id
 if "detections" not in db.list_collection_names():
     detections_collection = db.create_collection("detections")
-    # Optional: create index on candidate_id + timestamp
     detections_collection.create_index([("candidate_id", ASCENDING), ("timestamp", ASCENDING)])
 else:
     detections_collection = db["detections"]
+
+# Add/modify candidates collection with validation
+if "candidates" not in db.list_collection_names():
+    candidates_collection = db.create_collection("candidates", validator=candidate_schema)
+else:
+    db.command({
+        "collMod": "candidates",
+        "validator": candidate_schema
+    })
+    candidates_collection = db["candidates"]
+
+# Add/modify interviewers collection with validation
+if "interviewers" not in db.list_collection_names():
+    interviewers_collection = db.create_collection("interviewers", validator=interviewer_schema)
+else:
+    db.command({
+        "collMod": "interviewers",
+        "validator": interviewer_schema
+    })
+    interviewers_collection = db["interviewers"]
 
 def insert_event(candidate_id: str, event: dict):
     """
