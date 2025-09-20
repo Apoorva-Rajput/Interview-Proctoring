@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Dashboard = ({ candidateId }) => {
+const Dashboard = ({ candidateId , candidateName }) => {
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const Dashboard = ({ candidateId }) => {
   return (
     <div className="dashboard-container">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 className="dashboard-title">Dashboard - {candidateId}</h2>
+        <h2 className="dashboard-title">Dashboard - {candidateName}</h2>
         <button className="download-report-btn" onClick={handleDownloadReport}>Download Report</button>
       </div>
       <table className="dashboard-table">

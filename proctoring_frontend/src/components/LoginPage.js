@@ -21,13 +21,15 @@ export default function LoginPage({ onLogin }) {
       });
       const data = await res.json();
       if (role === "candidate" && data.candidate_id) {
-        localStorage.setItem("candidate_id", data.candidate_id);
+        sessionStorage.setItem("candidate_id", data.candidate_id);
+        sessionStorage.setItem("candidate_name", data.name);
         setMessage(`Login successful!`);
-        if (onLogin) onLogin(data.candidate_id, "candidate");
+        if (onLogin) onLogin(data.candidate_id,data.name, "candidate");
       } else if (role === "interviewer" && data.interviewer_id) {
-        localStorage.setItem("interviewer_id", data.interviewer_id);
+        sessionStorage.setItem("interviewer_id", data.interviewer_id);
+        sessionStorage.setItem("interviewer_name", data.name);
         setMessage(`Login successful!`);
-        if (onLogin) onLogin(data.interviewer_id, "interviewer");
+        if (onLogin) onLogin(data.interviewer_id,data.name, "interviewer");
       } else {
         setMessage(data.error || "Invalid credentials");
       }
@@ -48,13 +50,15 @@ export default function LoginPage({ onLogin }) {
       });
       const data = await res.json();
       if (role === "candidate" && data.candidate_id) {
-        localStorage.setItem("candidate_id", data.candidate_id);
+        sessionStorage.setItem("candidate_id", data.candidate_id);
+        sessionStorage.setItem("candidate_name", data.name);
         setMessage(`Registration successful!`);
-        if (onLogin) onLogin(data.candidate_id, "candidate");
+        if (onLogin) onLogin(data.candidate_id,data.name, "candidate");
       } else if (role === "interviewer" && data.interviewer_id) {
-        localStorage.setItem("interviewer_id", data.interviewer_id);
+        sessionStorage.setItem("interviewer_id", data.interviewer_id);
+        sessionStorage.setItem("interviewer_name", data.name);
         setMessage(`Registration successful!`);
-        if (onLogin) onLogin(data.interviewer_id, "interviewer");
+        if (onLogin) onLogin(data.interviewer_id,data.name, "interviewer");
       } else {
         setMessage(data.error || "Registration failed");
       }

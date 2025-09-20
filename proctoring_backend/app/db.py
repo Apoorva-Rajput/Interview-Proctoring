@@ -1,16 +1,8 @@
-def get_candidate_by_id(candidate_id: str):
-    """Fetch candidate details by candidate_id (MongoDB _id)."""
-    from bson import ObjectId
-    candidate = candidates_collection.find_one({"_id": ObjectId(candidate_id)})
-    if candidate:
-        candidate["_id"] = str(candidate["_id"])
-    return candidate
-# db.py
 import os
 from pymongo import MongoClient, ASCENDING
 from datetime import datetime
 
-MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://rajputapoorva1103_db_user:LdR9FZSLVFY7AMXl@cluster0.lo0r8cg.mongodb.net/")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 client = MongoClient(MONGO_URI)
 db = client["proctoring_db"]
 
@@ -60,13 +52,13 @@ def create_candidate(username: str, password: str, name: str = "", email: str = 
         "created_at": datetime.utcnow().isoformat(),
     }
     result = candidates_collection.insert_one(candidate)
-    return str(result.inserted_id)
+    return {"id": str(result.inserted_id), "name": name}
 
 def authenticate_candidate(username: str, password: str):
     """Verify candidate login and return ID if success."""
     candidate = candidates_collection.find_one({"username": username, "password": password})
     if candidate:
-        return str(candidate["_id"])
+        return {"id": str(candidate["_id"]), "name": candidate["name"]}
     return None
 
 def create_interviewer(username: str, password: str, name: str = "", email: str = ""):
@@ -82,12 +74,12 @@ def create_interviewer(username: str, password: str, name: str = "", email: str 
         "created_at": datetime.utcnow().isoformat(),
     }
     result = interviewers_collection.insert_one(interviewer)
-    return str(result.inserted_id)
+    return {"id": str(result.inserted_id), "name": name}
 
 def authenticate_interviewer(username: str, password: str):
     """Verify interviewer login and return ID if success."""
     interviewer = interviewers_collection.find_one({"username": username, "password": password})
     if interviewer:
-        return str(interviewer["_id"])
+        return {"id": str(interviewer["_id"]), "name": interviewer["name"]}
     return None
 

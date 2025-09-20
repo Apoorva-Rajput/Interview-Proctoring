@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const Candidate = ({ candidateId }) => {
+const Candidate = ({ candidateId , candidateName }) => {
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [recording, setRecording] = useState(false);
@@ -93,7 +93,7 @@ const Candidate = ({ candidateId }) => {
 
   return (
     <div className="candidate-container">
-      <h2 className="candidate-title">Candidate Screen - {candidateId}</h2>
+      <h2 className="candidate-title">Candidate Screen - {candidateName}</h2>
       <video ref={videoRef} autoPlay playsInline className="candidate-video" />
       <div style={{ marginTop: "1.5rem" }}>
         {!recording ? (
